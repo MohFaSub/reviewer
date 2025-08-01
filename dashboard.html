@@ -40,6 +40,7 @@
       color: #ff69b4;
       text-decoration: none;
       font-size: 1.2rem;
+      margin: 0 10px;
     }
 
     nav a:hover {
@@ -58,6 +59,11 @@
       padding: 15px;
       margin-bottom: 20px;
       background: #fff9fa;
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
     }
 
     .card h2 {
@@ -84,6 +90,7 @@
       font-size: 1.2rem;
       cursor: pointer;
       font-family: 'VT323', monospace;
+      transition: background-color 0.3s;
     }
 
     .card button:hover {
@@ -113,6 +120,7 @@
       font-size: 1.2rem;
       cursor: pointer;
       font-family: 'VT323', monospace;
+      margin-top: 10px;
     }
 
     /* Status indicator */
@@ -134,6 +142,35 @@
       color: #856404;
     }
 
+    /* Loading indicator */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,105,180,.3);
+      border-radius: 50%;
+      border-top-color: #ff69b4;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Notification */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #ff69b4;
+      color: white;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      display: none;
+      z-index: 1000;
+    }
+
     @media (min-width: 768px) {
       .container {
         max-width: 800px;
@@ -147,24 +184,65 @@
       .card button {
         width: auto;
         padding: 12px 25px;
+        display: block;
+        margin: 0 auto;
       }
     }
   </style>
 </head>
 <body>
+  <div class="notification" id="notification"></div>
+  
   <div class="container">
     <h1>📋 Dashboard Reviewer</h1>
     <nav>
+      <a href="profile.html">Profil</a>
       <a href="index.html" onclick="logout()">Logout</a>
     </nav>
     <p id="welcome"></p>
+    <div id="loadingIndicator" style="text-align: center; display: none;">
+      <div class="loading"></div> Memuat data...
+    </div>
     <div id="essayList"></div>
     <div id="deadlineInfo" class="timer-bar"></div>
     <div id="certificateSection"></div>
   </div>
 
-  <script src="data.js"></script>
   <script>
+    // Data contoh (biasanya ini ada di data.js terpisah)
+    const REVIEWERS = [
+      { id: "123", name: "John Doe" },
+      { id: "456", name: "Jane Smith" }
+    ];
+
+    const ESSAYS = [
+      { id: "e1", title: "Essay Pertama", gdrive: "https://drive.google.com/embed-demo" },
+      { id: "e2", title: "Essay Kedua", gdrive: "https://drive.google.com/embed-demo" },
+      { id: "e3", title: "Essay Ketiga", gdrive: "https://drive.google.com/embed-demo" }
+    ];
+
+    const REVIEWER_ASSIGNMENTS = {
+      "123": ["e1", "e2"],
+      "456": ["e2", "e3"]
+    };
+
+    // Fungsi untuk mendapatkan evaluasi dari localStorage
+    function getEvaluationsByReviewer(reviewerId) {
+      const evaluations = JSON.parse(localStorage.getItem('evaluations')) || {};
+      return evaluations[reviewerId] || {};
+    }
+
+    // Fungsi untuk menampilkan notifikasi
+    function showNotification(message, duration = 3000) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.style.display = 'block';
+      
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, duration);
+    }
+
     // Check authentication
     const reviewerNRP = localStorage.getItem("reviewerNRP");
     if (!reviewerNRP) {
@@ -178,49 +256,61 @@
     // Load assigned essays with status
     function loadAssignedEssays() {
       const essayListDiv = document.getElementById("essayList");
+      const loadingIndicator = document.getElementById('loadingIndicator');
+      
+      loadingIndicator.style.display = 'block';
       essayListDiv.innerHTML = '';
       
-      const assignments = REVIEWER_ASSIGNMENTS[reviewerNRP] || [];
-      const evaluations = getEvaluationsByReviewer(reviewerNRP);
+      setTimeout(() => { // Simulasi loading data
+        const assignments = REVIEWER_ASSIGNMENTS[reviewerNRP] || [];
+        const evaluations = getEvaluationsByReviewer(reviewerNRP);
 
-      if (assignments.length === 0) {
-        essayListDiv.innerHTML = '<p>Tidak ada tugas penilaian saat ini.</p>';
-        return;
-      }
+        if (assignments.length === 0) {
+          essayListDiv.innerHTML = '<p style="text-align:center;">Tidak ada tugas penilaian saat ini.</p>';
+          loadingIndicator.style.display = 'none';
+          return;
+        }
 
-      assignments.forEach(id => {
-        const essay = ESSAYS.find(e => e.id === id);
-        if (!essay) return;
+        assignments.forEach(id => {
+          const essay = ESSAYS.find(e => e.id === id);
+          if (!essay) return;
 
-        const evaluation = evaluations[id];
-        const isEvaluated = !!evaluation;
+          const evaluation = evaluations[id];
+          const isEvaluated = !!evaluation;
+          
+          const card = document.createElement("div");
+          card.className = "card";
+
+          card.innerHTML = `
+            <h2>${essay.title} 
+              <span class="status-badge ${isEvaluated ? 'status-completed' : 'status-pending'}">
+                ${isEvaluated ? '✓ Selesai' : 'Belum Dinilai'}
+              </span>
+            </h2>
+            <iframe src="${essay.gdrive}" width="100%" height="300" style="border:1px solid #ccc; border-radius:8px;"></iframe>
+            <button onclick="mulaiKoreksi('${essay.id}')">
+              ${isEvaluated ? 'Lihat Koreksi' : 'Mulai Koreksi'}
+            </button>
+          `;
+          essayListDiv.appendChild(card);
+        });
         
-        const card = document.createElement("div");
-        card.className = "card";
-
-        card.innerHTML = `
-          <h2>${essay.title} 
-            <span class="status-badge ${isEvaluated ? 'status-completed' : 'status-pending'}">
-              ${isEvaluated ? '✓ Selesai' : 'Belum Dinilai'}
-            </span>
-          </h2>
-          <iframe src="${essay.gdrive}" width="100%" height="300" style="border:1px solid #ccc; border-radius:8px;"></iframe>
-          <button onclick="mulaiKoreksi('${essay.id}')">
-            ${isEvaluated ? 'Lihat Koreksi' : 'Mulai Koreksi'}
-          </button>
-        `;
-        essayListDiv.appendChild(card);
-      });
+        loadingIndicator.style.display = 'none';
+      }, 800); // Delay simulasi
     }
 
     function mulaiKoreksi(essayId) {
       localStorage.setItem("currentEssayId", essayId);
-      window.location.href = "koreksi.html";
+      showNotification(Membuka essay untuk dikoreksi...);
+      setTimeout(() => {
+        window.location.href = "koreksi.html";
+      }, 500);
     }
 
     function logout() {
       localStorage.removeItem("reviewerNRP");
       localStorage.removeItem("userRole");
+      showNotification("Logout berhasil");
     }
 
     // Deadline Timer (1 - 5 Oktober 2025)
@@ -232,7 +322,7 @@
       const deadlineInfo = document.getElementById("deadlineInfo");
       
       if (remaining <= 0) {
-        deadlineInfo.innerHTML = <b style="color:red;">⏰ Deadline koreksi sudah berakhir.</b>;
+        deadlineInfo.innerHTML = '<b style="color:red;">⏰ Deadline koreksi sudah berakhir.</b>';
         return;
       }
 
@@ -271,14 +361,17 @@
           <div style="background:#eee; border-radius:8px; height:20px; margin:10px 0;">
             <div style="background:#4CAF50; width:${(completedCount/totalCount)*100}%; height:100%; border-radius:8px;"></div>
           </div>
+          <p>Selesaikan semua untuk mendapatkan sertifikat!</p>
         `;
       }
     }
 
     // Initialize
-    loadAssignedEssays();
-    setupDeadline();
-    checkCompletion();
+    document.addEventListener('DOMContentLoaded', () => {
+      loadAssignedEssays();
+      setupDeadline();
+      checkCompletion();
+    });
 
     // Auto-refresh every 30 seconds
     setInterval(() => {
@@ -288,7 +381,12 @@
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
   <script>
-    const blip = new Howl({ src: ['assets/sfx/select.mp3'], volume: 0.9 });
+    // Sound effects
+    const blip = new Howl({ 
+      src: ['https://assets.codepen.io/3364143/click.mp3'], 
+      volume: 0.5 
+    });
+    
     document.querySelectorAll("button").forEach(btn => {
       btn.addEventListener("click", () => blip.play());
     });
