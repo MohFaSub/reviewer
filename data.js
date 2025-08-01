@@ -3,7 +3,7 @@ const ESSAYS = [
   { 
     id: "essay01", 
     title: "Energi Terbarukan", 
-    gdrive: "https://drive.google.com/file/d/FILE_ID_1/preview" 
+    gdrive: "https://drive.google.com/file/d/1oF7xJjwTCFDBz1ugymQlPXr5kMT9tEPz/view?usp=drive_link"
   },
   // ... (tambahkan esai lainnya di sini)
 ];
@@ -12,12 +12,12 @@ const REVIEWERS = [
   { 
     id: "NRP001", 
     name: "Andi" 
-  },
+  }
   // ... (tambahkan reviewer lainnya di sini)
 ];
 
 const REVIEWER_ASSIGNMENTS = {
-  NRP001: ["essay01", "essay02", "essay03"],
+  NRP001: ["essay01"]
   // ... (tambahkan penugasan lainnya di sini)
 };
 
