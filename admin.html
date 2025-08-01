@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Admin Panel Rekap Esai</title>
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
   <style>
@@ -25,19 +25,21 @@
     }
 
     .container {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 2rem;
+      max-width: 100%;
+      margin: 1rem;
+      padding: 1rem;
       background: white;
       border-radius: 15px;
       box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      box-sizing: border-box;
     }
 
     h1 {
-      font-size: 2.4rem;
+      font-size: 2rem;
       color: var(--accent);
       text-align: center;
       margin-bottom: 1rem;
+      word-break: break-word;
     }
 
     nav {
@@ -56,11 +58,18 @@
       text-decoration: underline;
     }
 
-    input#searchInput {
-      width: 100%;
+    .table-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    #searchInput {
+      flex: 1;
+      min-width: 200px;
       padding: 10px;
       font-size: 1.2rem;
-      margin-bottom: 20px;
       border: 2px solid var(--accent);
       border-radius: 5px;
     }
@@ -72,18 +81,24 @@
       font-size: 1.1rem;
       border: none;
       border-radius: 8px;
-      margin-right: 10px;
       cursor: pointer;
+      white-space: nowrap;
     }
 
     button.export-btn:hover {
       background-color: var(--hover);
     }
 
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 1rem;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 1rem;
+      min-width: 500px;
     }
 
     th, td {
@@ -97,7 +112,6 @@
       color: var(--text-dark);
       position: sticky;
       top: 0;
-      z-index: 1;
     }
 
     tr.status-belum {
@@ -115,6 +129,32 @@
     tr.status-tinggi {
       background-color: #d4edda;
     }
+
+    @media (max-width: 768px) {
+      body {
+        font-size: 1.1rem;
+      }
+      
+      .container {
+        margin: 0.5rem;
+        padding: 0.8rem;
+        border-radius: 10px;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+      
+      th, td {
+        padding: 8px;
+        font-size: 1rem;
+      }
+      
+      button.export-btn {
+        padding: 8px 12px;
+        font-size: 1rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -123,10 +163,22 @@
     <nav>
       <a href="index.html" onclick="logout()">Logout</a>
     </nav>
-    <input type="text" id="searchInput" placeholder="🔍 Cari judul, reviewer, skor..." onkeyup="filterTable()">
-    <button class="export-btn" onclick="exportToCSV()">⬇️ Export CSV</button>
-    <button class="export-btn" onclick="exportToPDF()">⬇️ Export PDF</button>
-    <div id="table-container"></div>
+    <div class="table-controls">
+      <input type="text" id="searchInput" placeholder="🔍 Cari judul esai..." onkeyup="filterTable()">
+      <button class="export-btn" onclick="exportToCSV()">⬇ CSV</button>
+      <button class="export-btn" onclick="exportToPDF()">⬇ PDF</button>
+    </div>
+    <div class="table-responsive">
+      <table id="essayTable">
+        <thead>
+          <tr>
+            <th>Judul Esai</th>
+            <th>Nilai Akhir</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
   </div>
 
   <script src="data.js"></script>
@@ -137,80 +189,90 @@
     if (role !== "admin") window.location.href = "index.html";
     function logout(){ localStorage.clear(); }
 
-    const headers = ["ID Esai","Judul","Reviewer","Status","Plagiarisme","Judul OK","Jumlah Kata OK","Sitasi","Ejaan","Format","Sistematika","Data Valid","Total Skor","Komentar","Waktu"];
-    const rows = [];
+    const simplifiedData = [];
 
     ESSAYS.forEach(e => {
       const val = getEvaluation(e.id);
-      const s = val?.scores || {};
-      const total = val ? Object.values(s).reduce((a,b)=>a+b,0) : null;
-      rows.push({
-        id: e.id,
+      const total = val ? Object.values(val.scores || {}).reduce((a,b)=>a+b,0) : null;
+      simplifiedData.push({
         title: e.title,
-        reviewer: val?.reviewerNRP || "-",
+        total: total,
         status: val ? "✅ Sudah Dinilai" : "❌ Belum",
-        plag: s.plagiarisme ?? "-", judul: s.judul ?? "-", kata: s.kata ?? "-",
-        sitasi: s.sitasi ?? "-", ejaan: s.ejaan ?? "-", format: s.format ?? "-",
-        sist: s.sistematika ?? "-", data: s.data ?? "-", total: total, comment: val?.comment || "-", time: val ? new Date(val.timestamp).toLocaleString("id-ID") : "-"
+        id: e.id
       });
     });
 
-    rows.sort((a,b)=>(b.total||-1)-(a.total||-1));
+    simplifiedData.sort((a,b)=>(b.total||-1)-(a.total||-1));
 
-    function renderTable(){
-      const container = document.getElementById("table-container");
-      container.innerHTML = "";
-      const table = document.createElement("table"), thead=document.createElement("thead"), tbody=document.createElement("tbody");
-      thead.innerHTML = `<tr>${headers.map(h=>`<th>${h}</th>`).join("")}</tr>`;
-      rows.forEach(r=>{
-        const cls = r.total===null ? "status-belum" : r.total>=80 ? "status-tinggi" : r.total>=60 ? "status-sedang":"status-rendah";
+    function renderSimplifiedTable(){
+      const tbody = document.getElementById("tableBody");
+      tbody.innerHTML = "";
+      
+      simplifiedData.forEach(r => {
+        const cls = r.total===null ? "status-belum" : 
+                   r.total>=80 ? "status-tinggi" : 
+                   r.total>=60 ? "status-sedang" : "status-rendah";
         const tr = document.createElement("tr");
         tr.className = cls;
-        tr.innerHTML = `<td>${r.id}</td><td>${r.title}</td><td>${r.reviewer}</td><td>${r.status}</td>
-          <td>${r.plag}</td><td>${r.judul}</td><td>${r.kata}</td><td>${r.sitasi}</td>
-          <td>${r.ejaan}</td><td>${r.format}</td><td>${r.sist}</td><td>${r.data}</td>
-          <td>${r.total!==null?r.total:"-"}</td><td>${r.comment}</td><td>${r.time}</td>`;
+        tr.innerHTML = `
+          <td>${r.title}</td>
+          <td>${r.total !== null ? r.total : "-"}</td>
+        `;
         tbody.appendChild(tr);
       });
-      table.appendChild(thead); table.appendChild(tbody);
-      container.appendChild(table);
     }
 
     function filterTable(){
       const q = document.getElementById("searchInput").value.toLowerCase();
-      document.querySelectorAll("tbody tr").forEach(tr=>{
-        tr.style.display = tr.textContent.toLowerCase().includes(q) ? "" : "none";
+      document.querySelectorAll("#tableBody tr").forEach(tr => {
+        const title = tr.cells[0].textContent.toLowerCase();
+        tr.style.display = title.includes(q) ? "" : "none";
       });
     }
 
     function exportToCSV(){
-      let csv = headers.join(",") + "\n";
-      rows.forEach(r=>{
-        csv += headers.map((h,i)=>`"${String(Object.values(r)[i]).replace(/"/g,'""')}"`).join(",") + "\n";
+      let csv = "Judul Esai,Nilai Akhir\n";
+      simplifiedData.forEach(r => {
+        csv += "${r.title.replace(/"/g, '""')}",${r.total !== null ? r.total : "-"}\n;
       });
-      const a=document.createElement("a");
-      a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-      a.download="rekap_penilaian.csv"; a.click();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([csv], {type: "text/csv"}));
+      a.download = "rekap_simplified.csv"; 
+      a.click();
     }
 
     async function exportToPDF(){
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF('l','pt','a4');
+      const doc = new jsPDF();
       doc.setFontSize(14);
-      doc.text("Rekap Penilaian Esai", 40, 40);
-      doc.autoTable({ head: [headers], body: rows.map(r=>headers.map((h,i)=>Object.values(r)[i])), startY:60, theme:'grid', styles:{font:'courier'} });
-      doc.save("rekap_penilaian.pdf");
+      doc.text("Rekap Penilaian Esai (Simplified)", 15, 15);
+      
+      const headers = [["Judul Esai", "Nilai Akhir"]];
+      const body = simplifiedData.map(r => [r.title, r.total !== null ? r.total : "-"]);
+      
+      doc.autoTable({
+        head: headers,
+        body: body,
+        startY: 25,
+        theme: 'grid',
+        styles: { font: 'courier', fontSize: 10 },
+        columnStyles: {
+          0: { cellWidth: 'auto' },
+          1: { cellWidth: 30 }
+        }
+      });
+      
+      doc.save("rekap_simplified.pdf");
     }
 
-    renderTable();
+    renderSimplifiedTable();
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
-<script>
-  const blip = new Howl({ src: ['assets/sfx/select.mp3'], volume: 0.9 });
-  document.querySelectorAll("button").forEach(btn => {
-    btn.addEventListener("click", () => blip.play());
-  });
-</script>
-
+  <script>
+    const blip = new Howl({ src: ['assets/sfx/select.mp3'], volume: 0.9 });
+    document.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => blip.play());
+    });
+  </script>
 </body>
 </html>
