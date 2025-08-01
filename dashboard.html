@@ -1,198 +1,14 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard Reviewer</title>
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-  <style>
-    /* Mobile-first responsive styles */
-    body {
-      font-family: 'VT323', monospace;
-      margin: 0;
-      padding: 15px;
-      background-color: #f5f5f5;
-    }
-
-    .container {
-      max-width: 100%;
-      margin: 0 auto;
-      padding: 15px;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-      font-size: 1.8rem;
-      color: #ff69b4;
-      margin-bottom: 15px;
-      text-align: center;
-    }
-
-    nav {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-
-    nav a {
-      color: #ff69b4;
-      text-decoration: none;
-      font-size: 1.2rem;
-      margin: 0 10px;
-    }
-
-    nav a:hover {
-      text-decoration: underline;
-    }
-
-    #welcome {
-      font-size: 1.3rem;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .card {
-      border: 2px solid #ffb6c1;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 20px;
-      background: #fff9fa;
-      transition: transform 0.2s;
-    }
-
-    .card:hover {
-      transform: translateY(-3px);
-    }
-
-    .card h2 {
-      margin-top: 0;
-      color: #d23669;
-      font-size: 1.4rem;
-    }
-
-    .card iframe {
-      width: 100%;
-      height: 300px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      margin: 10px 0;
-    }
-
-    .card button {
-      width: 100%;
-      padding: 12px;
-      background-color: #ff69b4;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.2rem;
-      cursor: pointer;
-      font-family: 'VT323', monospace;
-      transition: background-color 0.3s;
-    }
-
-    .card button:hover {
-      background-color: #d23669;
-    }
-
-    .timer-bar {
-      background-color: #ffe4e1;
-      padding: 10px;
-      border-radius: 8px;
-      text-align: center;
-      margin: 15px 0;
-      font-size: 1.1rem;
-    }
-
-    #certificateSection {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    #certificateSection button {
-      background-color: #4CAF50;
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.2rem;
-      cursor: pointer;
-      font-family: 'VT323', monospace;
-      margin-top: 10px;
-    }
-
-    /* Status indicator */
-    .status-badge {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 12px;
-      font-size: 0.9rem;
-      margin-left: 10px;
-    }
-
-    .status-completed {
-      background-color: #d4edda;
-      color: #155724;
-    }
-
-    .status-pending {
-      background-color: #fff3cd;
-      color: #856404;
-    }
-
-    /* Loading indicator */
-    .loading {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255,105,180,.3);
-      border-radius: 50%;
-      border-top-color: #ff69b4;
-      animation: spin 1s ease-in-out infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Notification */
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #ff69b4;
-      color: white;
-      padding: 15px;
-      border-radius: 5px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-      display: none;
-      z-index: 1000;
-    }
-
-    @media (min-width: 768px) {
-      .container {
-        max-width: 800px;
-        padding: 25px;
-      }
-      
-      .card {
-        padding: 20px;
-      }
-      
-      .card button {
-        width: auto;
-        padding: 12px 25px;
-        display: block;
-        margin: 0 auto;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
 </head>
 <body>
   <div class="notification" id="notification"></div>
-  
   <div class="container">
     <h1>📋 Dashboard Reviewer</h1>
     <nav>
@@ -208,62 +24,42 @@
     <div id="certificateSection"></div>
   </div>
 
+  <script src="data.js"></script>
   <script>
-    // Data contoh (biasanya ini ada di data.js terpisah)
-    const REVIEWERS = [
-      { id: "123", name: "John Doe" },
-      { id: "456", name: "Jane Smith" }
-    ];
-
-    const ESSAYS = [
-      { id: "e1", title: "Essay Pertama", gdrive: "https://drive.google.com/embed-demo" },
-      { id: "e2", title: "Essay Kedua", gdrive: "https://drive.google.com/embed-demo" },
-      { id: "e3", title: "Essay Ketiga", gdrive: "https://drive.google.com/embed-demo" }
-    ];
-
-    const REVIEWER_ASSIGNMENTS = {
-      "123": ["e1", "e2"],
-      "456": ["e2", "e3"]
-    };
-
-    // Fungsi untuk mendapatkan evaluasi dari localStorage
-    function getEvaluationsByReviewer(reviewerId) {
-      const evaluations = JSON.parse(localStorage.getItem('evaluations')) || {};
-      return evaluations[reviewerId] || {};
-    }
-
-    // Fungsi untuk menampilkan notifikasi
-    function showNotification(message, duration = 3000) {
-      const notification = document.getElementById('notification');
-      notification.textContent = message;
-      notification.style.display = 'block';
-      
-      setTimeout(() => {
-        notification.style.display = 'none';
-      }, duration);
-    }
-
-    // Check authentication
     const reviewerNRP = localStorage.getItem("reviewerNRP");
     if (!reviewerNRP) {
       window.location.href = "index.html";
     }
 
-    // Load reviewer data
     const reviewer = REVIEWERS.find(r => r.id === reviewerNRP);
-    document.getElementById("welcome").textContent = Halo ${reviewer?.name || reviewerNRP}, berikut tugas Anda:;
+    document.getElementById("welcome").textContent = `Halo ${reviewer?.name || reviewerNRP}, berikut tugas Anda:`;
 
-    // Load assigned essays with status
+    function showNotification(message, duration = 3000) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.style.display = 'block';
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, duration);
+    }
+
+    function getEvaluations() {
+      try {
+        return JSON.parse(localStorage.getItem("ESSAY_EVALUATIONS_v3")) || {};
+      } catch {
+        return {};
+      }
+    }
+
     function loadAssignedEssays() {
       const essayListDiv = document.getElementById("essayList");
       const loadingIndicator = document.getElementById('loadingIndicator');
-      
       loadingIndicator.style.display = 'block';
       essayListDiv.innerHTML = '';
-      
-      setTimeout(() => { // Simulasi loading data
+
+      setTimeout(() => {
         const assignments = REVIEWER_ASSIGNMENTS[reviewerNRP] || [];
-        const evaluations = getEvaluationsByReviewer(reviewerNRP);
+        const evaluations = getEvaluations();
 
         if (assignments.length === 0) {
           essayListDiv.innerHTML = '<p style="text-align:center;">Tidak ada tugas penilaian saat ini.</p>';
@@ -277,10 +73,9 @@
 
           const evaluation = evaluations[id];
           const isEvaluated = !!evaluation;
-          
+
           const card = document.createElement("div");
           card.className = "card";
-
           card.innerHTML = `
             <h2>${essay.title} 
               <span class="status-badge ${isEvaluated ? 'status-completed' : 'status-pending'}">
@@ -294,14 +89,14 @@
           `;
           essayListDiv.appendChild(card);
         });
-        
+
         loadingIndicator.style.display = 'none';
-      }, 800); // Delay simulasi
+      }, 800);
     }
 
     function mulaiKoreksi(essayId) {
       localStorage.setItem("currentEssayId", essayId);
-      showNotification(Membuka essay untuk dikoreksi...);
+      showNotification("Membuka essay untuk dikoreksi...");
       setTimeout(() => {
         window.location.href = "koreksi.html";
       }, 500);
@@ -313,14 +108,12 @@
       showNotification("Logout berhasil");
     }
 
-    // Deadline Timer (1 - 5 Oktober 2025)
     function setupDeadline() {
       const deadline = new Date("2025-10-05T23:59:59").getTime();
-      const now = new Date().getTime();
+      const now = Date.now();
       const remaining = deadline - now;
 
       const deadlineInfo = document.getElementById("deadlineInfo");
-      
       if (remaining <= 0) {
         deadlineInfo.innerHTML = '<b style="color:red;">⏰ Deadline koreksi sudah berakhir.</b>';
         return;
@@ -329,66 +122,13 @@
       const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
       const hours = Math.floor((remaining / (1000 * 60 * 60)) % 24);
       const minutes = Math.floor((remaining / (1000 * 60)) % 60);
-
-      deadlineInfo.innerHTML = `
-        ⏳ Sisa waktu koreksi: ${days} hari ${hours} jam ${minutes} menit
-      `;
-      setTimeout(setupDeadline, 60000); // Update every minute
+      deadlineInfo.innerHTML = `⏳ Sisa waktu koreksi: ${days} hari ${hours} jam ${minutes} menit`;
+      setTimeout(setupDeadline, 60000);
     }
 
-    // Certificate Section
-    function checkCompletion() {
-      const assignments = REVIEWER_ASSIGNMENTS[reviewerNRP] || [];
-      const evaluations = getEvaluationsByReviewer(reviewerNRP);
-      const completedCount = assignments.filter(id => evaluations[id]).length;
-      const totalCount = assignments.length;
-      
-      const certificateSection = document.getElementById("certificateSection");
-      
-      if (totalCount === 0) {
-        certificateSection.innerHTML = '';
-        return;
-      }
-
-      if (completedCount === totalCount) {
-        certificateSection.innerHTML = `
-          <h3>🎉 Anda telah menyelesaikan semua penilaian (${completedCount}/${totalCount})</h3>
-          <button onclick="window.open('sertifikat.html', '_blank')">🎓 Klaim Sertifikat</button>
-        `;
-      } else {
-        certificateSection.innerHTML = `
-          <p>Progress: ${completedCount}/${totalCount} esai telah dinilai</p>
-          <div style="background:#eee; border-radius:8px; height:20px; margin:10px 0;">
-            <div style="background:#4CAF50; width:${(completedCount/totalCount)*100}%; height:100%; border-radius:8px;"></div>
-          </div>
-          <p>Selesaikan semua untuk mendapatkan sertifikat!</p>
-        `;
-      }
-    }
-
-    // Initialize
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener("DOMContentLoaded", () => {
       loadAssignedEssays();
       setupDeadline();
-      checkCompletion();
-    });
-
-    // Auto-refresh every 30 seconds
-    setInterval(() => {
-      loadAssignedEssays();
-      checkCompletion();
-    }, 30000);
-  </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
-  <script>
-    // Sound effects
-    const blip = new Howl({ 
-      src: ['https://assets.codepen.io/3364143/click.mp3'], 
-      volume: 0.5 
-    });
-    
-    document.querySelectorAll("button").forEach(btn => {
-      btn.addEventListener("click", () => blip.play());
     });
   </script>
 </body>
