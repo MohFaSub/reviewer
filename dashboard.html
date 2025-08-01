@@ -2,13 +2,156 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Dashboard Reviewer</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <style>
+    /* Mobile-first responsive styles */
+    body {
+      font-family: 'VT323', monospace;
+      margin: 0;
+      padding: 15px;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 15px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      color: #ff69b4;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    nav {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    nav a {
+      color: #ff69b4;
+      text-decoration: none;
+      font-size: 1.2rem;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    #welcome {
+      font-size: 1.3rem;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      border: 2px solid #ffb6c1;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      background: #fff9fa;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: #d23669;
+      font-size: 1.4rem;
+    }
+
+    .card iframe {
+      width: 100%;
+      height: 300px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+
+    .card button {
+      width: 100%;
+      padding: 12px;
+      background-color: #ff69b4;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      font-family: 'VT323', monospace;
+    }
+
+    .card button:hover {
+      background-color: #d23669;
+    }
+
+    .timer-bar {
+      background-color: #ffe4e1;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      margin: 15px 0;
+      font-size: 1.1rem;
+    }
+
+    #certificateSection {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    #certificateSection button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      font-family: 'VT323', monospace;
+    }
+
+    /* Status indicator */
+    .status-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      margin-left: 10px;
+    }
+
+    .status-completed {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .status-pending {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+
+    @media (min-width: 768px) {
+      .container {
+        max-width: 800px;
+        padding: 25px;
+      }
+      
+      .card {
+        padding: 20px;
+      }
+      
+      .card button {
+        width: auto;
+        padding: 12px 25px;
+      }
+    }
+  </style>
 </head>
 <body>
-   
   <div class="container">
     <h1>📋 Dashboard Reviewer</h1>
     <nav>
@@ -16,39 +159,59 @@
     </nav>
     <p id="welcome"></p>
     <div id="essayList"></div>
-    <!-- Tambahkan di dalam <div class="container"> -->
     <div id="deadlineInfo" class="timer-bar"></div>
-    <div id="certificateSection" style="margin-top: 20px;"></div>
-
+    <div id="certificateSection"></div>
   </div>
 
   <script src="data.js"></script>
   <script>
+    // Check authentication
     const reviewerNRP = localStorage.getItem("reviewerNRP");
     if (!reviewerNRP) {
       window.location.href = "index.html";
     }
 
-    const assignments = REVIEWER_ASSIGNMENTS[reviewerNRP] || [];
+    // Load reviewer data
     const reviewer = REVIEWERS.find(r => r.id === reviewerNRP);
-    document.getElementById("welcome").textContent = `Halo ${reviewer?.name || reviewerNRP}, berikut tugas Anda:`;
+    document.getElementById("welcome").textContent = Halo ${reviewer?.name || reviewerNRP}, berikut tugas Anda:;
 
-    const essayListDiv = document.getElementById("essayList");
+    // Load assigned essays with status
+    function loadAssignedEssays() {
+      const essayListDiv = document.getElementById("essayList");
+      essayListDiv.innerHTML = '';
+      
+      const assignments = REVIEWER_ASSIGNMENTS[reviewerNRP] || [];
+      const evaluations = getEvaluationsByReviewer(reviewerNRP);
 
-    assignments.forEach(id => {
-      const essay = ESSAYS.find(e => e.id === id);
-      if (!essay) return;
+      if (assignments.length === 0) {
+        essayListDiv.innerHTML = '<p>Tidak ada tugas penilaian saat ini.</p>';
+        return;
+      }
 
-      const card = document.createElement("div");
-      card.className = "card";
+      assignments.forEach(id => {
+        const essay = ESSAYS.find(e => e.id === id);
+        if (!essay) return;
 
-      card.innerHTML = `
-        <h2>${essay.title}</h2>
-        <iframe src="${essay.gdrive}" width="100%" height="300" style="border:1px solid #ccc; border-radius:8px;"></iframe>
-        <button onclick="mulaiKoreksi('${essay.id}')">Mulai Koreksi</button>
-      `;
-      essayListDiv.appendChild(card);
-    });
+        const evaluation = evaluations[id];
+        const isEvaluated = !!evaluation;
+        
+        const card = document.createElement("div");
+        card.className = "card";
+
+        card.innerHTML = `
+          <h2>${essay.title} 
+            <span class="status-badge ${isEvaluated ? 'status-completed' : 'status-pending'}">
+              ${isEvaluated ? '✓ Selesai' : 'Belum Dinilai'}
+            </span>
+          </h2>
+          <iframe src="${essay.gdrive}" width="100%" height="300" style="border:1px solid #ccc; border-radius:8px;"></iframe>
+          <button onclick="mulaiKoreksi('${essay.id}')">
+            ${isEvaluated ? 'Lihat Koreksi' : 'Mulai Koreksi'}
+          </button>
+        `;
+        essayListDiv.appendChild(card);
+      });
+    }
 
     function mulaiKoreksi(essayId) {
       localStorage.setItem("currentEssayId", essayId);
@@ -56,54 +219,79 @@
     }
 
     function logout() {
-      localStorage.clear();
+      localStorage.removeItem("reviewerNRP");
+      localStorage.removeItem("userRole");
     }
-    // 1. Deadline Timer (1 - 5 Oktober 2025)
-function setupDeadline() {
-  const deadline = new Date("2025-10-05T23:59:59").getTime();
-  const now = new Date().getTime();
-  const remaining = deadline - now;
 
-  if (remaining <= 0) {
-    document.getElementById("deadlineInfo").innerHTML = `<b style="color:red;">⏰ Deadline koreksi sudah berakhir.</b>`;
-    return;
-  }
+    // Deadline Timer (1 - 5 Oktober 2025)
+    function setupDeadline() {
+      const deadline = new Date("2025-10-05T23:59:59").getTime();
+      const now = new Date().getTime();
+      const remaining = deadline - now;
 
-  const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((remaining / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor((remaining / (1000 * 60)) % 60);
-  const seconds = Math.floor((remaining / 1000) % 60);
+      const deadlineInfo = document.getElementById("deadlineInfo");
+      
+      if (remaining <= 0) {
+        deadlineInfo.innerHTML = <b style="color:red;">⏰ Deadline koreksi sudah berakhir.</b>;
+        return;
+      }
 
-  document.getElementById("deadlineInfo").innerHTML = `
-    ⏳ Sisa waktu koreksi: ${days} hari ${hours} jam ${minutes} menit ${seconds} detik
-  `;
-  setTimeout(setupDeadline, 1000);
-}
-setupDeadline();
+      const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((remaining / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((remaining / (1000 * 60)) % 60);
 
-// 2. Sertifikat (jika semua sudah dinilai)
-function cekSelesaiDanTampilkanSertifikat() {
-  const assignments = REVIEWER_ASSIGNMENTS[reviewerNRP] || [];
-  const belumDinilai = assignments.filter(id => !getEvaluation(id));
-  const container = document.getElementById("certificateSection");
+      deadlineInfo.innerHTML = `
+        ⏳ Sisa waktu koreksi: ${days} hari ${hours} jam ${minutes} menit
+      `;
+      setTimeout(setupDeadline, 60000); // Update every minute
+    }
 
-  if (belumDinilai.length === 0 && assignments.length > 0) {
-    container.innerHTML = `
-      <h3>🎉 Selamat! Anda telah menyelesaikan semua penilaian.</h3>
-      <button onclick="window.open('sertifikat.html', '_blank')">🎓 Klaim Sertifikat</button>
-    `;
-  }
-}
-cekSelesaiDanTampilkanSertifikat();
+    // Certificate Section
+    function checkCompletion() {
+      const assignments = REVIEWER_ASSIGNMENTS[reviewerNRP] || [];
+      const evaluations = getEvaluationsByReviewer(reviewerNRP);
+      const completedCount = assignments.filter(id => evaluations[id]).length;
+      const totalCount = assignments.length;
+      
+      const certificateSection = document.getElementById("certificateSection");
+      
+      if (totalCount === 0) {
+        certificateSection.innerHTML = '';
+        return;
+      }
 
+      if (completedCount === totalCount) {
+        certificateSection.innerHTML = `
+          <h3>🎉 Anda telah menyelesaikan semua penilaian (${completedCount}/${totalCount})</h3>
+          <button onclick="window.open('sertifikat.html', '_blank')">🎓 Klaim Sertifikat</button>
+        `;
+      } else {
+        certificateSection.innerHTML = `
+          <p>Progress: ${completedCount}/${totalCount} esai telah dinilai</p>
+          <div style="background:#eee; border-radius:8px; height:20px; margin:10px 0;">
+            <div style="background:#4CAF50; width:${(completedCount/totalCount)*100}%; height:100%; border-radius:8px;"></div>
+          </div>
+        `;
+      }
+    }
+
+    // Initialize
+    loadAssignedEssays();
+    setupDeadline();
+    checkCompletion();
+
+    // Auto-refresh every 30 seconds
+    setInterval(() => {
+      loadAssignedEssays();
+      checkCompletion();
+    }, 30000);
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
-<script>
-  const blip = new Howl({ src: ['assets/sfx/select.mp3'], volume: 0.9 });
-  document.querySelectorAll("button").forEach(btn => {
-    btn.addEventListener("click", () => blip.play());
-  });
-</script>
-
+  <script>
+    const blip = new Howl({ src: ['assets/sfx/select.mp3'], volume: 0.9 });
+    document.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => blip.play());
+    });
+  </script>
 </body>
 </html>
