@@ -2,16 +2,238 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Form Penilaian Esai</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <style>
+    /* Mobile-first responsive styles */
+    body {
+      font-family: 'VT323', monospace;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 15px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #ff69b4;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    nav {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    nav a {
+      color: #ff69b4;
+      text-decoration: none;
+      font-size: 1.3rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    iframe {
+      width: 100%;
+      height: 400px;
+      border: 2px solid #ffb6c1;
+      border-radius: 10px;
+    }
+
+    #evalForm {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    #formFields {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 1.1rem;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 1.1rem;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+      font-family: 'VT323', monospace;
+      min-height: 100px;
+    }
+
+    button {
+      background-color: #ff69b4;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-family: 'VT323', monospace;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #d23669;
+    }
+
+    /* Guide System */
+    #helpIcon {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+      z-index: 100;
+      transition: transform 0.3s;
+    }
+
+    #helpIcon:hover {
+      transform: scale(1.1);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      z-index: 1000;
+      overflow: auto;
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .nav-buttons button {
+      width: 48%;
+    }
+
+    /* Dialog Box */
+    .dialog-box {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      z-index: 1000;
+      text-align: center;
+      max-width: 90%;
+    }
+
+    /* Collapsible Guide Button */
+    .guide-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #ff69b4;
+      color: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      transition: all 0.3s;
+    }
+
+    .guide-toggle:hover {
+      background-color: #d23669;
+      transform: scale(1.1);
+    }
+
+    .guide-toggle::after {
+      content: "?";
+      font-size: 1.5rem;
+    }
+
+    /* Media Queries */
+    @media (min-width: 768px) {
+      .container {
+        max-width: 800px;
+        padding: 30px;
+      }
+
+      button {
+        width: auto;
+        padding: 12px 30px;
+      }
+
+      .nav-buttons button {
+        width: 45%;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>📝 Form Penilaian Esai</h1>
-    <nav><a href="dashboard.html">⬅️ Kembali</a></nav>
+    <nav><a href="dashboard.html">⬅ Kembali</a></nav>
     <div class="card" id="previewContainer"></div>
 
     <form id="evalForm">
@@ -23,15 +245,16 @@
     </form>
   </div>
 
-  <img id="helpIcon" src="assets/ikonguide.png" onclick="openGuide()" alt="Petunjuk Penilaian">
+  <!-- Changed from image to simple toggle button -->
+  <div class="guide-toggle" onclick="toggleGuide()"></div>
 
   <div id="guideModal" class="modal">
     <div class="modal-content">
       <span class="close-btn" onclick="closeGuide()">&times;</span>
       <div id="guideContent"></div>
       <div class="nav-buttons">
-        <button onclick="prevPage()">⬅️ Back</button>
-        <button onclick="nextPage()">Next ➡️</button>
+        <button onclick="prevPage()">⬅ Back</button>
+        <button onclick="nextPage()">Next ➡</button>
       </div>
     </div>
   </div>
@@ -45,6 +268,7 @@
   <script src="data.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
   <script>
+    // Authentication check
     const essayId = localStorage.getItem("currentEssayId");
     const reviewerNRP = localStorage.getItem("reviewerNRP");
     if (!essayId || !reviewerNRP) location.href = "index.html";
@@ -52,11 +276,13 @@
     const essay = ESSAYS.find(e => e.id === essayId);
     if (!essay) location.href = "dashboard.html";
 
+    // Load essay preview
     document.getElementById("previewContainer").innerHTML = `
       <h2>${essay.title}</h2>
-      <iframe src="${essay.gdrive}" width="100%" height="400" style="border:2px solid pink; border-radius:10px;"></iframe>
+      <iframe src="${essay.gdrive}" width="100%" height="400"></iframe>
     `;
 
+    // Evaluation criteria
     const kriteria = [
       { key: "plagiarisme", label: "Plagiarisme dan AI (max 30% — bobot 40)", max: 40 },
       { key: "judul", label: "Judul maksimal 20 kata (bobot 5)", max: 5 },
@@ -68,9 +294,11 @@
       { key: "data", label: "Penyajian data yang valid (bobot 10)", max: 10 }
     ];
 
+    // Load saved evaluation if exists
     const saved = getEvaluation(essayId);
     const fieldContainer = document.getElementById("formFields");
 
+    // Create form fields
     kriteria.forEach(item => {
       const wrapper = document.createElement("div");
       wrapper.innerHTML = `
@@ -83,10 +311,12 @@
 
     document.getElementById("comment").value = saved?.comment || "";
 
+    // Save evaluation function
     function simpanPenilaian() {
       const scores = {};
       let valid = true;
 
+      // Validate inputs
       document.querySelectorAll('.score-input').forEach((input) => {
         const val = parseFloat(input.value);
         const max = parseFloat(input.max);
@@ -99,23 +329,28 @@
         }
       });
 
-      const comment = document.getElementById("comment").value;
+      const comment = document.getElementById("comment").value.trim();
 
       if (!valid) {
-        alert("Nilai harus valid dan sesuai rentang maksimum.");
+        alert("Harap isi semua nilai dengan benar (0 sampai nilai maksimum).");
         return;
       }
 
-      if (!essayId) {
-        alert("ID esai tidak ditemukan!");
+      if (comment === "") {
+        alert("Harap berikan komentar/feedback.");
+        document.getElementById("comment").focus();
         return;
       }
 
+      // Save evaluation
       saveEvaluation(essayId, scores, comment);
+      
+      // Celebration effect
       firePixelConfetti();
       showDialog();
     }
 
+    // Confetti effect
     function firePixelConfetti() {
       confetti({
         particleCount: 80,
@@ -127,6 +362,7 @@
       });
     }
 
+    // Dialog functions
     function showDialog() {
       document.getElementById("rpgDialog").style.display = "block";
     }
@@ -136,30 +372,41 @@
       window.location.href = "dashboard.html";
     }
 
+    // Guide system
     const guidePages = [
       `<h2>Rubrik Penilaian Esai</h2>
         <ul>
-          <li>Plagiarisme & AI: max 40 poin</li>
-          <li>Judul maksimal 20 kata: 5 poin</li>
-          <li>Total kata 1000–2000: 5 poin</li>
-          <li>Referensi/sitasi & daftar pustaka: 10 poin</li>
+          <li><strong>Plagiarisme & AI</strong>: max 40 poin (30% toleransi)</li>
+          <li><strong>Judul</strong>: maksimal 20 kata (5 poin)</li>
+          <li><strong>Total kata</strong>: 1000–2000 (5 poin)</li>
+          <li><strong>Referensi/sitasi</strong>: kesesuaian dengan daftar pustaka (10 poin)</li>
         </ul>`,
       `<h2>Rubrik Penilaian Esai (lanjutan)</h2>
         <ul>
-          <li>Ejaan & Tanda Baca: 8 poin</li>
-          <li>Format dokumen: 12 poin</li>
-          <li>Sistematika esai: 8 poin</li>
-          <li>Data valid & relevan: 10 poin</li>
+          <li><strong>Ejaan & Tanda Baca</strong>: ketepatan penggunaan (8 poin)</li>
+          <li><strong>Format dokumen</strong>: sesuai panduan (12 poin)</li>
+          <li><strong>Sistematika esai</strong>: struktur jelas (8 poin)</li>
+          <li><strong>Data valid & relevan</strong>: mendukung argumen (10 poin)</li>
         </ul>`,
       `<h2>Tips Penilaian Objektif</h2>
         <ul>
-          <li>Perhatikan proporsi penilaian</li>
+          <li>Baca seluruh esai sebelum mulai menilai</li>
           <li>Bandingkan dengan rubrik secara konsisten</li>
-          <li>Gunakan komentar untuk memperkuat penilaian</li>
+          <li>Gunakan komentar untuk memberikan masukan konstruktif</li>
+          <li>Perhatikan proporsi penilaian sesuai bobot</li>
         </ul>`
     ];
 
     let guideIndex = 0;
+
+    function toggleGuide() {
+      const modal = document.getElementById("guideModal");
+      if (modal.style.display === "block") {
+        closeGuide();
+      } else {
+        openGuide();
+      }
+    }
 
     function openGuide() {
       document.getElementById("guideModal").style.display = "block";
@@ -168,6 +415,7 @@
 
     function closeGuide() {
       document.getElementById("guideModal").style.display = "none";
+      guideIndex = 0; // Reset to first page when closing
     }
 
     function showGuidePage() {
@@ -188,10 +436,32 @@
       }
     }
 
-    // Efek klik
-    const blip = new Howl({ src: ['assets/sfx/select.mp3'], volume: 0.9 });
+    // Close modal when clicking outside content
+    window.onclick = function(event) {
+      const modal = document.getElementById("guideModal");
+      if (event.target == modal) {
+        closeGuide();
+      }
+    }
+
+    // Sound effects
+    const blip = new Howl({ 
+      src: ['assets/sfx/select.mp3'], 
+      volume: 0.7,
+      onplayerror: function() {
+        blip.once('unlock', function() {
+          blip.play();
+        });
+      }
+    });
+    
     document.querySelectorAll("button").forEach(btn => {
-      btn.addEventListener("click", () => blip.play());
+      btn.addEventListener("click", () => {
+        if (Howler.ctx.state === 'suspended') {
+          Howler.ctx.resume();
+        }
+        blip.play();
+      });
     });
   </script>
 </body>
