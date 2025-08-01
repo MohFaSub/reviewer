@@ -113,32 +113,4 @@ function getAllEvaluationsForTable() {
   });
 }
 
-// Debug functions
-function clearAllEvaluations() {
-  localStorage.removeItem(STORAGE_KEY);
-}
 
-function seedDummyData() {
-  const dummyEvaluation = {
-    scores: {
-      plagiarisme: 30,
-      judul: 5,
-      kata: 5,
-      sitasi: 8,
-      ejaan: 7,
-      format: 10,
-      sistematika: 7,
-      data: 9
-    },
-    comment: "Karya yang bagus, tetapi perlu perbaikan di bagian metodologi",
-    reviewerNRP: "NRP001",
-    timestamp: new Date().toISOString()
-  };
-  
-  saveEvaluation("essay01", dummyEvaluation.scores, dummyEvaluation.comment);
-}
-
-// Ekspor global agar tersedia di browser
-window.ESSAYS = ESSAYS;
-window.REVIEWERS = REVIEWERS;
-window.REVIEWER_ASSIGNMENTS = REVIEWER_ASSIGNMENTS;
