@@ -6,7 +6,6 @@
   <title>Login Penilai Esai</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
-  <script src="data.js" defer></script>
 </head>
 <body>
   <div class="container">
@@ -23,32 +22,36 @@
     </form>
   </div>
 
+  <!-- Perhatikan bahwa data.js HARUS di-load sebelum login script -->
+  <script src="data.js"></script>
+
   <script>
-    window.addEventListener("DOMContentLoaded", () => {
-      // Clear session
-      localStorage.removeItem("userRole");
-      localStorage.removeItem("reviewerNRP");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("reviewerNRP");
 
-      const loginForm = document.getElementById("loginForm");
-      const inputField = document.getElementById("nrp");
-      const errorElement = document.getElementById("errorMessage");
+    const form = document.getElementById("loginForm");
+    const errorElement = document.getElementById("errorMessage");
 
-      loginForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-        const input = inputField.value.trim();
-        errorElement.style.display = "none";
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const input = document.getElementById("nrp").value.trim();
+      errorElement.style.display = "none";
 
-        const adminCode = "L!K67_505S";
-        const button = loginForm.querySelector("button");
-        const originalText = button.textContent;
-        button.textContent = "Memeriksa...";
-        button.disabled = true;
+      const adminCode = "L!K67_505S";
+      const button = form.querySelector("button");
+      const originalText = button.textContent;
+      button.textContent = "Memeriksa...";
+      button.disabled = true;
 
-        setTimeout(() => {
-          if (input === adminCode) {
-            localStorage.setItem("userRole", "admin");
-            window.location.href = "admin.html";
-          } else if (typeof REVIEWERS !== "undefined") {
+      setTimeout(() => {
+        if (input === adminCode) {
+          localStorage.setItem("userRole", "admin");
+          window.location.href = "admin.html";
+        } else {
+          try {
+            if (typeof REVIEWERS === "undefined") {
+              throw new Error("Data reviewer belum tersedia.");
+            }
             const reviewer = REVIEWERS.find(r => r.id === input);
             if (reviewer) {
               localStorage.setItem("userRole", "reviewer");
@@ -59,37 +62,38 @@
               button.textContent = originalText;
               button.disabled = false;
             }
-          } else {
-            showError("Gagal memuat data reviewer.");
+          } catch (err) {
+            showError("Gagal memuat data reviewer. Pastikan data.js termuat dengan benar.");
+            console.error(err);
             button.textContent = originalText;
             button.disabled = false;
           }
-        }, 800);
-      });
-
-      function showError(message) {
-        errorElement.textContent = message;
-        errorElement.style.display = "block";
-        loginForm.classList.add("shake");
-        setTimeout(() => {
-          loginForm.classList.remove("shake");
-        }, 500);
-      }
-
-      // Tambahkan animasi shake
-      const style = document.createElement("style");
-      style.textContent = `
-        .shake {
-          animation: shake 0.5s;
         }
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          20%, 60% { transform: translateX(-5px); }
-          40%, 80% { transform: translateX(5px); }
-        }
-      `;
-      document.head.appendChild(style);
+      }, 600);
     });
+
+    function showError(message) {
+      errorElement.textContent = message;
+      errorElement.style.display = "block";
+      form.classList.add("shake");
+      setTimeout(() => {
+        form.classList.remove("shake");
+      }, 500);
+    }
+
+    // Tambahkan animasi shake
+    const style = document.createElement("style");
+    style.textContent = `
+      .shake {
+        animation: shake 0.5s;
+      }
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        20%, 60% { transform: translateX(-5px); }
+        40%, 80% { transform: translateX(5px); }
+      }
+    `;
+    document.head.appendChild(style);
   </script>
 </body>
 </html>
