@@ -138,19 +138,7 @@ function seedDummyData() {
   saveEvaluation("essay01", dummyEvaluation.scores, dummyEvaluation.comment);
 }
 
-// Export for testing
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    ESSAYS,
-    REVIEWERS,
-    REVIEWER_ASSIGNMENTS,
-    getAllEvaluations,
-    saveEvaluation,
-    getEvaluation,
-    getEvaluationsByReviewer,
-    getAssignedEssays,
-    getAllEvaluationsForTable,
-    clearAllEvaluations,
-    seedDummyData
-  };
-}
+// Ekspor global agar tersedia di browser
+window.ESSAYS = ESSAYS;
+window.REVIEWERS = REVIEWERS;
+window.REVIEWER_ASSIGNMENTS = REVIEWER_ASSIGNMENTS;
