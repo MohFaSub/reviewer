@@ -230,7 +230,61 @@ body {
 }
 
 
+/* ========== RESPONSIVE STYLES ========== */
+@media (max-width: 768px) {
+  body {
+    font-size: 16px;
+    padding: 0 15px;
+  }
+  
+  .container {
+    width: 100%;
+    padding: 0;
+  }
+  
+  h1 {
+    font-size: 24px;
+  }
+  
+  h2 {
+    font-size: 20px;
+  }
+  
+  input, select, button {
+    font-size: 16px;
+    padding: 10px 15px;
+    margin: 8px 0;
+  }
+  
+  button {
+    min-width: 120px;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  table {
+    min-width: 600px;
+  }
+  
+  .card {
+    margin-bottom: 20px;
+    padding: 15px;
+  }
+}
 
+@media (max-width: 480px) {
+  .form-group {
+    flex-direction: column;
+  }
+  
+  .form-group label {
+    margin-bottom: 5px;
+  }
+}
 
 
 
