@@ -2,10 +2,53 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Login Penilai Esai</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <style>
+    /* Mobile-first responsive additions */
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+        font-size: 16px;
+      }
+      
+      .container {
+        width: 100%;
+        padding: 20px 15px;
+        box-sizing: border-box;
+      }
+      
+      h1 {
+        font-size: 24px;
+        margin: 10px 0 20px;
+      }
+      
+      #loginForm {
+        width: 100%;
+      }
+      
+      input[type="text"] {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        box-sizing: border-box;
+      }
+      
+      button {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+      }
+      
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 16px;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -42,12 +85,11 @@
     });
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
-<script>
-  const blip = new Howl({ src: ['assets/sfx/select.mp3'], volume: 0.9 });
-  document.querySelectorAll("button").forEach(btn => {
-    btn.addEventListener("click", () => blip.play());
-  });
-</script>
-
+  <script>
+    const blip = new Howl({ src: ['assets/sfx/select.mp3'], volume: 0.9 });
+    document.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => blip.play());
+    });
+  </script>
 </body>
 </html>
