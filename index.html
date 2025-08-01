@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Login Penilai Esai</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
@@ -22,36 +22,35 @@
     </form>
   </div>
 
-  <!-- Perhatikan bahwa data.js HARUS di-load sebelum login script -->
+  <!-- 💡 Penting: Pastikan file ini ada di root folder -->
   <script src="data.js"></script>
 
   <script>
+    // Reset session
     localStorage.removeItem("userRole");
     localStorage.removeItem("reviewerNRP");
 
-    const form = document.getElementById("loginForm");
+    const loginForm = document.getElementById("loginForm");
     const errorElement = document.getElementById("errorMessage");
 
-    form.addEventListener("submit", function (e) {
+    loginForm.addEventListener("submit", function (e) {
       e.preventDefault();
+
       const input = document.getElementById("nrp").value.trim();
+      const adminCode = "L!K67_505S";
+      const button = loginForm.querySelector("button");
+      const originalText = button.textContent;
       errorElement.style.display = "none";
 
-      const adminCode = "L!K67_505S";
-      const button = form.querySelector("button");
-      const originalText = button.textContent;
       button.textContent = "Memeriksa...";
       button.disabled = true;
 
       setTimeout(() => {
-        if (input === adminCode) {
-          localStorage.setItem("userRole", "admin");
-          window.location.href = "admin.html";
-        } else {
-          try {
-            if (typeof REVIEWERS === "undefined") {
-              throw new Error("Data reviewer belum tersedia.");
-            }
+        try {
+          if (input === adminCode) {
+            localStorage.setItem("userRole", "admin");
+            window.location.href = "admin.html";
+          } else if (typeof REVIEWERS !== "undefined") {
             const reviewer = REVIEWERS.find(r => r.id === input);
             if (reviewer) {
               localStorage.setItem("userRole", "reviewer");
@@ -59,29 +58,28 @@
               window.location.href = "dashboard.html";
             } else {
               showError("NRP tidak dikenali. Silakan coba lagi.");
-              button.textContent = originalText;
-              button.disabled = false;
             }
-          } catch (err) {
-            showError("Gagal memuat data reviewer. Pastikan data.js termuat dengan benar.");
-            console.error(err);
-            button.textContent = originalText;
-            button.disabled = false;
+          } else {
+            showError("Data reviewer belum termuat.");
           }
+        } catch (err) {
+          console.error("Login Error:", err);
+          showError("Terjadi kesalahan saat login.");
         }
-      }, 600);
+
+        button.textContent = originalText;
+        button.disabled = false;
+      }, 500);
     });
 
     function showError(message) {
       errorElement.textContent = message;
       errorElement.style.display = "block";
-      form.classList.add("shake");
-      setTimeout(() => {
-        form.classList.remove("shake");
-      }, 500);
+      loginForm.classList.add("shake");
+      setTimeout(() => loginForm.classList.remove("shake"), 500);
     }
 
-    // Tambahkan animasi shake
+    // Shake animation
     const style = document.createElement("style");
     style.textContent = `
       .shake {
