@@ -2,55 +2,239 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sertifikat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sertifikat Penilaian Esai</title>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Segoe UI', sans-serif; text-align: center; padding: 50px; background: #f4f4f4; }
-    .sertifikat {
-      border: 5px double #333;
-      padding: 40px;
-      background: white;
-      max-width: 700px;
-      margin: auto;
+    /* Mobile-first responsive styles */
+    body {
+      font-family: 'VT323', monospace;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
-    .btn {
+
+    .container {
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 20px;
+      box-sizing: border-box;
+      flex: 1;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #6a11cb;
+      text-align: center;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .certificate-container {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+
+    .certificate-preview {
+      width: 100%;
+      height: 500px;
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f9f9f9;
+      overflow: hidden;
+    }
+
+    .certificate-preview iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .placeholder-text {
+      text-align: center;
+      color: #666;
+      font-size: 1.2rem;
+    }
+
+    .download-section {
+      text-align: center;
       margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 1rem;
-      background: royalblue;
+    }
+
+    .download-btn {
+      background: linear-gradient(to right, #6a11cb, #2575fc);
       color: white;
       border: none;
-      border-radius: 5px;
+      padding: 15px 30px;
+      font-size: 1.3rem;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 10px;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .download-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .back-btn {
+      display: block;
+      text-align: center;
+      margin-top: 30px;
+      color: #6a11cb;
+      font-size: 1.2rem;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .certificate-preview {
+        height: 400px;
+      }
+      
+      .download-btn {
+        padding: 12px 25px;
+        font-size: 1.2rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+      
+      .certificate-preview {
+        height: 300px;
+      }
+      
+      .download-btn {
+        width: 100%;
+        margin: 5px 0;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="sertifikat">
-    <h1>SERTIFIKAT PENILAIAN</h1>
-    <p>Dengan ini menyatakan bahwa:</p>
-    <h2><span id="namaReviewer">[Nama Reviewer]</span></h2>
-    <p>telah menyelesaikan penilaian semua esai yang ditugaskan dengan penuh tanggung jawab.</p>
-    <p><i>Terima kasih atas kontribusinya!</i></p>
-    <p><small>Diterbitkan: <span id="tanggal"></span></small></p>
-
-    <button class="btn" onclick="window.print()">🖨️ Cetak / Simpan PDF</button>
+  <div class="container">
+    <h1>🏆 Sertifikat Penilaian Esai</h1>
+    
+    <div class="certificate-container">
+      <div class="certificate-preview">
+        <!-- 
+          TEMPLATE UNTUK PREVIEW SERTIFIKAT:
+          Ganti bagian ini dengan iframe atau img untuk menampilkan preview sertifikat
+          Contoh:
+          <iframe src="https://drive.google.com/file/d/YOUR_FILE_ID/preview"></iframe>
+          atau
+          <img src="assets/sertifikat-preview.jpg" alt="Preview Sertifikat">
+        -->
+        <div class="placeholder-text">
+          [Preview Sertifikat Akan Ditampilkan Di Sini]
+          <br><br>
+          <!-- Petunjuk untuk menambahkan sertifikat -->
+          <small>
+            Untuk menambahkan sertifikat:<br>
+            1. Upload file PDF ke Google Drive atau server Anda<br>
+            2. Ganti link di bagian JavaScript dibawah<br>
+            3. Atau uncomment contoh iframe di atas
+          </small>
+        </div>
+      </div>
+      
+      <div class="download-section">
+        <!-- 
+          LINK DOWNLOAD SERTIFIKAT:
+          Ganti URL dibawah dengan link download sertifikat yang sebenarnya
+        -->
+        <a href="#" id="downloadLink" class="download-btn">
+          ⬇ Download Sertifikat (PDF)
+        </a>
+        
+        <!-- Opsi kedua jika perlu format berbeda -->
+        <a href="#" id="downloadLinkJpg" class="download-btn">
+          ⬇ Download Sertifikat (JPG)
+        </a>
+      </div>
+    </div>
+    
+    <a href="dashboard.html" class="back-btn">⬅ Kembali ke Dashboard</a>
   </div>
 
-  <script src="data.js"></script>
   <script>
-    const reviewerId = localStorage.getItem("reviewerNRP");
-    const reviewer = REVIEWERS.find(r => r.id === reviewerId);
-    document.getElementById("namaReviewer").textContent = reviewer?.name || reviewerId;
-    document.getElementById("tanggal").textContent = new Date().toLocaleDateString("id-ID");
+    // =============================================
+    // KONFIGURASI LINK SERTIFIKAT
+    // =============================================
+    // 1. Untuk Google Drive PDF (Ganti YOUR_FILE_ID)
+    // const pdfUrl = 'https://drive.google.com/uc?export=download&id=YOUR_FILE_ID';
+    
+    // 2. Untuk file di server Anda
+    // const pdfUrl = 'assets/sertifikat/sertifikat.pdf';
+    
+    // 3. Contoh default (kosong)
+    const pdfUrl = '#';
+    const jpgUrl = '#';
+    
+    // =============================================
+    // INISIALISASI LINK DOWNLOAD
+    // =============================================
+    document.getElementById('downloadLink').href = pdfUrl;
+    document.getElementById('downloadLinkJpg').href = jpgUrl;
+    
+    // =============================================
+    // FUNGSI UNTUK PREVIEW SERTIFIKAT
+    // =============================================
+    function initCertificatePreview() {
+      const previewContainer = document.querySelector('.certificate-preview');
+      
+      /* 
+        UNCOMMENT SALAH SATU METODE PREVIEW DIBAWAH:
+      */
+      
+      // 1. Metode Google Drive Viewer (PDF)
+      // previewContainer.innerHTML = `
+      //   <iframe src="https://drive.google.com/file/d/YOUR_FILE_ID/preview"></iframe>
+      // `;
+      
+      // 2. Metode Gambar (JPG/PNG)
+      // previewContainer.innerHTML = `
+      //   <img src="assets/sertifikat-preview.jpg" alt="Preview Sertifikat" style="max-width:100%; max-height:100%;">
+      // `;
+      
+      // 3. Metode PDF.js (Untuk PDF langsung)
+      // initPdfJsViewer('assets/sertifikat.pdf');
+    }
+    
+    // Fungsi untuk PDF.js viewer (jika diperlukan)
+    function initPdfJsViewer(pdfUrl) {
+      // Implementasi PDF.js bisa ditambahkan di sini
+      console.log('PDF viewer akan menampilkan:', pdfUrl);
+    }
+    
+    // Panggil fungsi inisialisasi saat halaman dimuat
+    window.addEventListener('DOMContentLoaded', initCertificatePreview);
   </script>
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
-<script>
-  const blip = new Howl({ src: ['assets/sfx/select.mp3'], volume: 0.9 });
-  document.querySelectorAll("button").forEach(btn => {
-    btn.addEventListener("click", () => blip.play());
-  });
-</script>
-
 </body>
 </html>
