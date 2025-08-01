@@ -6,6 +6,113 @@
   <title>Login Penilai Esai</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary-color: #6a11cb;
+      --secondary-color: #2575fc;
+      --error-color: #ff4757;
+      --text-color: #2f3542;
+      --bg-color: #f1f2f6;
+    }
+
+    body {
+      font-family: 'VT323', monospace;
+      background: linear-gradient(135deg, var(--bg-color), #dfe4ea);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 500px;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    #loginForm {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
+      color: var(--text-color);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 1.1rem;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      transition: all 0.3s;
+      box-sizing: border-box;
+      font-family: 'VT323', monospace;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.2);
+    }
+
+    button {
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 14px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: 'VT323', monospace;
+      letter-spacing: 1px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .error-message {
+      color: var(--error-color);
+      margin-top: 5px;
+      font-size: 0.9rem;
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -22,64 +129,55 @@
     </form>
   </div>
 
-  <!-- 💡 Penting: Pastikan file ini ada di root folder -->
   <script src="data.js"></script>
-
   <script>
-    // Reset session
     localStorage.removeItem("userRole");
     localStorage.removeItem("reviewerNRP");
 
-    const loginForm = document.getElementById("loginForm");
+    const form = document.getElementById("loginForm");
     const errorElement = document.getElementById("errorMessage");
 
-    loginForm.addEventListener("submit", function (e) {
+    form.addEventListener("submit", function (e) {
       e.preventDefault();
 
       const input = document.getElementById("nrp").value.trim();
       const adminCode = "L!K67_505S";
-      const button = loginForm.querySelector("button");
+      const button = form.querySelector("button");
       const originalText = button.textContent;
-      errorElement.style.display = "none";
 
+      errorElement.style.display = "none";
       button.textContent = "Memeriksa...";
       button.disabled = true;
 
       setTimeout(() => {
-        try {
-          if (input === adminCode) {
-            localStorage.setItem("userRole", "admin");
-            window.location.href = "admin.html";
-          } else if (typeof REVIEWERS !== "undefined") {
-            const reviewer = REVIEWERS.find(r => r.id === input);
-            if (reviewer) {
-              localStorage.setItem("userRole", "reviewer");
-              localStorage.setItem("reviewerNRP", reviewer.id);
-              window.location.href = "dashboard.html";
-            } else {
-              showError("NRP tidak dikenali. Silakan coba lagi.");
-            }
-          } else {
-            showError("Data reviewer belum termuat.");
-          }
-        } catch (err) {
-          console.error("Login Error:", err);
-          showError("Terjadi kesalahan saat login.");
-        }
+        if (input === adminCode) {
+          localStorage.setItem("userRole", "admin");
+          window.location.href = "admin.html";
+        } else {
+          const reviewerList = typeof REVIEWERS !== "undefined" ? REVIEWERS : window.REVIEWERS;
+          const reviewer = reviewerList.find(r => r.id === input);
 
-        button.textContent = originalText;
-        button.disabled = false;
-      }, 500);
+          if (reviewer) {
+            localStorage.setItem("userRole", "reviewer");
+            localStorage.setItem("reviewerNRP", reviewer.id);
+            window.location.href = "dashboard.html";
+          } else {
+            showError("NRP tidak dikenali. Silakan coba lagi.");
+            button.textContent = originalText;
+            button.disabled = false;
+          }
+        }
+      }, 600);
     });
 
     function showError(message) {
       errorElement.textContent = message;
       errorElement.style.display = "block";
-      loginForm.classList.add("shake");
-      setTimeout(() => loginForm.classList.remove("shake"), 500);
+      form.classList.add("shake");
+      setTimeout(() => form.classList.remove("shake"), 500);
     }
 
-    // Shake animation
+    // Tambah animasi shake
     const style = document.createElement("style");
     style.textContent = `
       .shake {
