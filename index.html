@@ -1,148 +1,12 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login Penilai Esai</title>
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --primary-color: #6a11cb;
-      --secondary-color: #2575fc;
-      --error-color: #ff4757;
-      --text-color: #2f3542;
-      --bg-color: #f1f2f6;
-    }
-
-    body {
-      font-family: 'VT323', monospace;
-      background: linear-gradient(135deg, var(--bg-color), #dfe4ea);
-      color: var(--text-color);
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .container {
-      width: 90%;
-      max-width: 500px;
-      padding: 30px;
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 15px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      animation: fadeIn 0.5s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    h1 {
-      font-size: 2rem;
-      color: var(--primary-color);
-      margin-bottom: 1.5rem;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-    }
-
-    #loginForm {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .form-group {
-      text-align: left;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-size: 1.2rem;
-      color: var(--text-color);
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 12px 15px;
-      font-size: 1.1rem;
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      transition: all 0.3s;
-      box-sizing: border-box;
-      font-family: 'VT323', monospace;
-    }
-
-    input[type="text"]:focus {
-      border-color: var(--primary-color);
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.2);
-    }
-
-    button {
-      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-      color: white;
-      padding: 14px;
-      font-size: 1.2rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-family: 'VT323', monospace;
-      letter-spacing: 1px;
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    button:active {
-      transform: translateY(0);
-    }
-
-    .error-message {
-      color: var(--error-color);
-      margin-top: 5px;
-      font-size: 0.9rem;
-      display: none;
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-      .container {
-        width: 95%;
-        padding: 20px;
-      }
-      
-      h1 {
-        font-size: 1.8rem;
-      }
-      
-      input[type="text"] {
-        padding: 10px 12px;
-      }
-      
-      button {
-        padding: 12px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 1.5rem;
-      }
-      
-      label {
-        font-size: 1rem;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
+  <script src="data.js" defer></script>
 </head>
 <body>
   <div class="container">
@@ -151,7 +15,7 @@
     <form id="loginForm">
       <div class="form-group">
         <label for="nrp">Masukkan NRP (Reviewer) atau Kode Admin:</label>
-        <input type="text" id="nrp" name="nrp" required placeholder="NRP Reviewer / Kode Admin">
+        <input type="text" id="nrp" name="nrp" required placeholder="NRP Reviewer / Kode Admin" />
         <div id="errorMessage" class="error-message"></div>
       </div>
 
@@ -159,98 +23,72 @@
     </form>
   </div>
 
-  <script src="data.js"></script>
   <script>
-    // Clear any existing session data
-    localStorage.removeItem("userRole");
-    localStorage.removeItem("reviewerNRP");
+    window.addEventListener("DOMContentLoaded", () => {
+      // Clear session
+      localStorage.removeItem("userRole");
+      localStorage.removeItem("reviewerNRP");
 
-    document.getElementById("loginForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-      const input = document.getElementById("nrp").value.trim();
+      const loginForm = document.getElementById("loginForm");
+      const inputField = document.getElementById("nrp");
       const errorElement = document.getElementById("errorMessage");
-      errorElement.style.display = "none";
-      
-      // Basic input validation
-      if (!input) {
-        showError("Harap masukkan NRP atau kode admin");
-        return;
-      }
 
-      const adminCode = "L!K67_505S";
-      
-      // Add loading state
-      const button = e.target.querySelector("button");
-      const originalText = button.textContent;
-      button.textContent = "Memeriksa...";
-      button.disabled = true;
+      loginForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const input = inputField.value.trim();
+        errorElement.style.display = "none";
 
-      // Simulate network delay for better UX
-      setTimeout(() => {
-        if (input === adminCode) {
-          localStorage.setItem("userRole", "admin");
-          window.location.href = "admin.html";
-        } else {
-          const reviewer = REVIEWERS.find(r => r.id === input);
-          if (reviewer) {
-            localStorage.setItem("userRole", "reviewer");
-            localStorage.setItem("reviewerNRP", reviewer.id);
-            window.location.href = "dashboard.html";
+        const adminCode = "L!K67_505S";
+        const button = loginForm.querySelector("button");
+        const originalText = button.textContent;
+        button.textContent = "Memeriksa...";
+        button.disabled = true;
+
+        setTimeout(() => {
+          if (input === adminCode) {
+            localStorage.setItem("userRole", "admin");
+            window.location.href = "admin.html";
+          } else if (typeof REVIEWERS !== "undefined") {
+            const reviewer = REVIEWERS.find(r => r.id === input);
+            if (reviewer) {
+              localStorage.setItem("userRole", "reviewer");
+              localStorage.setItem("reviewerNRP", reviewer.id);
+              window.location.href = "dashboard.html";
+            } else {
+              showError("NRP tidak dikenali. Silakan coba lagi.");
+              button.textContent = originalText;
+              button.disabled = false;
+            }
           } else {
-            showError("NRP tidak dikenali. Silakan coba lagi.");
+            showError("Gagal memuat data reviewer.");
             button.textContent = originalText;
             button.disabled = false;
           }
-        }
-      }, 800); // Simulated delay
-    });
-
-    function showError(message) {
-      const errorElement = document.getElementById("errorMessage");
-      errorElement.textContent = message;
-      errorElement.style.display = "block";
-      
-      // Shake animation for error
-      document.getElementById("loginForm").classList.add("shake");
-      setTimeout(() => {
-        document.getElementById("loginForm").classList.remove("shake");
-      }, 500);
-    }
-
-    // Add shake animation to CSS
-    const style = document.createElement("style");
-    style.textContent = `
-      .shake {
-        animation: shake 0.5s;
-      }
-      @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        20%, 60% { transform: translateX(-5px); }
-        40%, 80% { transform: translateX(5px); }
-      }
-    `;
-    document.head.appendChild(style);
-  </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
-  <script>
-    const blip = new Howl({ 
-      src: ['assets/sfx/select.mp3'], 
-      volume: 0.7,
-      onplayerror: function() {
-        blip.once('unlock', function() {
-          blip.play();
-        });
-      }
-    });
-    
-    document.querySelectorAll("button").forEach(btn => {
-      btn.addEventListener("click", () => {
-        // Ensure audio can play on mobile devices
-        if (Howler.ctx.state === 'suspended') {
-          Howler.ctx.resume();
-        }
-        blip.play();
+        }, 800);
       });
+
+      function showError(message) {
+        errorElement.textContent = message;
+        errorElement.style.display = "block";
+        loginForm.classList.add("shake");
+        setTimeout(() => {
+          loginForm.classList.remove("shake");
+        }, 500);
+      }
+
+      // Tambahkan animasi shake
+      const style = document.createElement("style");
+      style.textContent = `
+        .shake {
+          animation: shake 0.5s;
+        }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          20%, 60% { transform: translateX(-5px); }
+          40%, 80% { transform: translateX(5px); }
+        }
+      `;
+      document.head.appendChild(style);
     });
   </script>
 </body>
